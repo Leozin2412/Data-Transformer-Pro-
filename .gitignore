@@ -1,0 +1,4 @@
+.env
+/generated/prisma
+/src/serverTest.js
+automatizacaodebh-fb0d69aaeef2.json

@@ -1,0 +1,113 @@
+
+
+
+/*  import { PrismaClient } from '../../generated/prisma/index.js';
+
+
+const prisma=new PrismaClient(); */
+import { PrismaClient } from '../../generated/prisma/index.js';
+/* const prisma = global.prisma || new PrismaClient();
+if (process.env.NODE_ENV === 'development') {
+    global.prisma = prisma;
+} */
+const prisma=new PrismaClient();
+const TSrepo={
+    async importTS(seguradora,segurado,sinistroString,processoUp,DtInicial,DtFinal,descString,incidencia,executante){
+               // const sinistroString=stringify(sinistro)
+               
+                const importTS=await prisma.timesheet.create({
+                    data:{
+                    Seguradora: seguradora,
+                    Segurado: segurado,
+                    Sinistro: sinistroString,
+                    NTradsul: processoUp,
+                    DtInicial: DtInicial,
+                    DtFinal: DtFinal,
+                    Descricao: descString,
+                    TpIncidencia: incidencia,
+                    Executante: executante,
+                    }
+                })
+                    return  importTS;
+    },
+
+    async selectTS(processo,DtInicialL,DtFinalL){
+
+        const selectTS= prisma.timesheet.findMany(
+           { where:{
+                NTradsul:processo,
+                DtInicial:{gte:DtInicialL},
+                DtFinal:{lte:DtFinalL}
+            },
+            select:{
+                Seguradora:true,
+                Segurado:true,
+                Sinistro:true,
+                NTradsul:true,
+                DtInicial:true,
+                DtFinal:true,
+                Descricao:true,
+                TpIncidencia:true,
+                Executante:true
+            },
+            orderBy:{
+                    DtInicial:'asc'
+            }
+
+            }
+        )
+
+        return selectTS
+    
+    },
+
+    async valorH(seguradora){
+        console.log(seguradora)
+        const valorH= await prisma.honorarios.findUnique(
+            {where:{
+                seguradora:seguradora
+            },
+            select:{
+                valor_atual:true
+            }
+        }
+        )
+        return valorH
+    },
+    
+    async totalH(processo){
+        const activities=await prisma.timesheet.findMany({
+            where:{
+                NTradsul:processo
+            },
+            select:{
+                DtInicial:true,
+                DtFinal:true
+            }
+        })
+        const totalMili = activities.reduce((acc,atividade)=>{
+            const inicio=new Date(atividade.DtInicial);
+            const fim=new Date(atividade.DtFinal);
+            const duracao=fim-inicio;
+
+            return acc+(duracao>0 ? duracao:0)
+        },0);
+
+        const totalD=totalMili/3600000;
+        return totalD
+    }
+    
+}
+
+
+export default TSrepo
+        
+
+
+    
+
+
+    
+
+
+

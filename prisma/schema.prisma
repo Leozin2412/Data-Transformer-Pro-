@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model timesheet {
+  id           Int      @id @default(autoincrement())
+  Seguradora   String?  @db.VarChar(255)
+  Segurado     String   @db.VarChar(255)
+  Sinistro     String?  @db.VarChar(255)
+  NTradsul     String   @db.VarChar(100)
+  DtInicial    DateTime
+  DtFinal      DateTime
+  Descricao    String?
+  TpIncidencia String   @db.VarChar(255)
+  Executante   String   @db.VarChar(255)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model honorarios {
+  seguradora  String   @id
+  valor_atual Decimal  @db.Decimal(10, 2)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+}
